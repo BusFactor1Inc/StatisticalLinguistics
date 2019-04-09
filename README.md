@@ -50,6 +50,12 @@ CL-USER 10> (word-for-definition "LOVE")
 "WHIN"
 ````
 
+Web Interface:
+--
+
+There's a little web interface to generate-english-word on port 4242
+if you run (main).'
+
 "Just for fun."	
 
 --

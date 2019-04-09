@@ -1,3 +1,10 @@
+(eval-when (compile load)
+  (load "~/quicklisp/setup.lisp")
+  (ql:quickload :hunchentoot)
+  (ql:quickload :cl-who))
+
+(use-package :cl-who)
+
 (load (current-pathname "10000-english-words")) 
 (load (current-pathname "latin-word-list")) 
 (defconstant *word-list* +10000-english-words+)
@@ -212,3 +219,19 @@
        (when (= value (second data))
          (return-from word-for-definition (first data)))))))
          
+
+(defparameter *server* nil)
+
+(hunchentoot:define-easy-handler
+ (root :uri "/"
+       :default-request-type :get) ()
+ (with-html-output-to-string (*standard-output* nil :prologue t)
+                             (:html
+                              (:head (:title "Hello, world!"))
+                              (:body
+                               (:h1 (str (format nil "~S"
+                                                 (random-english-word))))))))
+
+(defun main ()
+  (setf *server* (hunchentoot:start
+                  (make-instance 'hunchentoot:easy-acceptor :port 4242))))
