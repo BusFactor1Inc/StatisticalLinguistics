@@ -5,6 +5,11 @@ A set of functions and data sets for working with words starting from
 a word list using a combination of digraphs and trigraph statistics
 and features.
 
+Gemantria is basic Kaballah, where the indexes of the letters in the
+sorted word character set are added up to give the value of the word.
+This value is then compared to words with the same value and
+associated thusly.
+
 Usage:
 --
 
