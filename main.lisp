@@ -174,7 +174,7 @@
     (list (car gemantria)
           (let ((alters (gethash (second gemantria)
                                  +english-gemantria-table+)))
-            (list (pick alters) (pick alters) (pick alters))))))
+            alters))))
 
 
 (defun random-english-word (&optional (length (+ 3 (random 10))))
@@ -198,3 +198,17 @@
     (english-gemantria word)))
       
 
+
+(defun word-for-definition (definition)
+  (destructuring-bind (word value)
+      (gemantria (coerce definition 'list)
+                 +used-characters-table+)
+    (loop 
+     (let ((data (gemantria (coerce
+                             (first (random-english-word
+                                     (1+ (random (length definition)))))
+                                    'list)
+                            +used-characters-table+)))
+       (when (= value (second data))
+         (return-from word-for-definition (first data)))))))
+         
