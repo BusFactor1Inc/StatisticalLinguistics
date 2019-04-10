@@ -5,6 +5,7 @@
 
 (use-package :cl-who)
 
+(load (current-pathname "1000-english-words")) 
 (load (current-pathname "10000-english-words")) 
 (load (current-pathname "latin-word-list")) 
 (defconstant *word-list* +10000-english-words+)
@@ -184,7 +185,7 @@
             alters))))
 
 
-(defun random-english-word (&optional (length (+ 3 (random 10))))
+(defun random-english-word (&optional (length (+ 1 (random 7))))
   (let ((word (random-digraph)))
     (dotimes (i length)
       (setf word (append word
@@ -192,7 +193,7 @@
                           (next-trigraph (car (last word)))))))
     (english-gemantria word)))
 
-(defun random-english-word-2 (&optional (length (+ 3 (random 7))))
+(defun random-english-word-2 (&optional (length (+ 1 (random 7))))
   (let ((word (random-digraph)))
     (dotimes (i length)
       (if (< 0.5 (random 1.0))
@@ -225,12 +226,27 @@
 (hunchentoot:define-easy-handler
  (root :uri "/"
        :default-request-type :get) ()
- (with-html-output-to-string (*standard-output* nil :prologue t)
-                             (:html
-                              (:head (:title "Hello, world!"))
-                              (:body
-                               (:h1 (str (format nil "~S"
-                                                 (random-english-word))))))))
+  (let ((word (random-english-word))
+        (word-2 (random-english-word-2)))
+    (with-html-output-to-string
+        (*standard-output* nil :prologue t)
+      (:html
+       (:head (:title "Geomatric Word Inspiration."))
+       (:body
+        (:h1 (str (car word)))
+        (:h2 (str (concatenate 'string
+                               "(" (car word-2) ")")))
+         (:ol
+          (:li (str (concatenate 'string
+                                 (pick (cadr word)) ",&nbsp;"
+                                 (pick (cadr word-2)))))
+          (:li (str (concatenate 'string
+                                 (pick (cadr word)) ",&nbsp;"
+                                 (pick (cadr word-2)))))
+          (:li (str (concatenate 'string
+                                 (pick (cadr word)) ",&nbsp;"
+                                 (pick (cadr word-2)))))))))))
+
 
 (defun main ()
   (setf *server* (hunchentoot:start
