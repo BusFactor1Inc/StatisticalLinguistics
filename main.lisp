@@ -8,7 +8,11 @@
 (load (current-pathname "1000-english-words")) 
 (load (current-pathname "10000-english-words")) 
 (load (current-pathname "latin-word-list")) 
-(defconstant *word-list* +10000-english-words+)
+(defparameter *word-list* +10000-english-words+)
+
+(setf *word-list* (remove-if (lambda (x)
+                               (< (length (symbol-name x)) 3))
+                             *word-list*))
 
 (defconstant +words-as-strings+
   (mapcar #'symbol-name *word-list*))
@@ -228,25 +232,36 @@
        :default-request-type :get) ()
   (let ((word (random-english-word))
         (word-2 (random-english-word-2)))
-    (with-html-output-to-string
-        (*standard-output* nil :prologue t)
-      (:html
-       (:head (:title "Geomatric Word Inspiration."))
-       (:body
-        (:h1 (str (car word)))
-        (:h2 (str (concatenate 'string
-                               "(" (car word-2) ")")))
-         (:ol
-          (:li (str (concatenate 'string
-                                 (pick (cadr word)) ",&nbsp;"
-                                 (pick (cadr word-2)))))
-          (:li (str (concatenate 'string
-                                 (pick (cadr word)) ",&nbsp;"
-                                 (pick (cadr word-2)))))
-          (:li (str (concatenate 'string
-                                 (pick (cadr word)) ",&nbsp;"
-                                 (pick (cadr word-2)))))))))))
+    (let ((html
+           (with-html-output-to-string
+               (*standard-output* nil :prologue t)
+             (:html
+              (:head (:title (str "Magic Word Generator"))
+              (:body
+               (:h1 (str "Magic Word Generator."))
+               (:h1 (str (concatenate 'string
+                                      (car word)
+                                      "&nbsp;(" (car word-2) ")")))
+               (:h2 "Means: ")
+               (:ol
+                (:li (str (concatenate 'string
+                                       (pick (cadr word)) ",&nbsp;"
+                                       (pick (cadr word-2)))))
+                (:li (str (concatenate 'string
+                                       (pick (cadr word)) ",&nbsp;"
+                                       (pick (cadr word-2)))))
+                (:li (str (concatenate 'string
+                                       (pick (cadr word)) ",&nbsp;"
+                                       (pick (cadr word-2))))))))))))
+      (with-open-file (s (current-pathname "data/log.html")
+                         :direction :output
+                         :if-exists :append
+                         :if-does-not-exist :create)
+        (print html s))
+      html)))
 
+
+(setf hunchentoot:*show-lisp-backtraces-p* t)
 
 (defun main ()
   (setf *server* (hunchentoot:start
